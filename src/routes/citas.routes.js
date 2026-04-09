@@ -36,6 +36,6 @@ router.get("/:id", idValidator, getCitaById);
 router.delete("/:id", idValidator, deleteCita);
 
 // PUT: Actualizar datos de una cita existente
-router.put("/:id", idValidator, createCitaValidator, updateCita);
+router.put("/:id", idValidator, updateCita);
 
 export default router;
