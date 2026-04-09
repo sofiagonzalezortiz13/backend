@@ -79,7 +79,12 @@ export const getCitaById = async (req, res, next) => {
 /** Actualizar Cita */
 export const updateCita = async (req, res, next) => {
   try {
+    // Si usas validadores en la ruta, esto atrapará errores antes de procesar
     if (handleValidation(req, res)) return;
+
+    const { id } = req.params;
+    // Limpiamos el ID por si llega con caracteres extraños como :1
+    const cleanId = id.includes(':') ? id.split(':')[0] : id;
 
     const campos = {};
     if (req.body.medico_id)  campos.medico_id  = req.body.medico_id;
@@ -88,7 +93,7 @@ export const updateCita = async (req, res, next) => {
     if (req.body.estado)     campos.estado     = req.body.estado;
 
     const updated = await Cita.findByIdAndUpdate(
-      req.params.id,
+      cleanId, // Usamos el ID limpio
       { $set: campos },
       { new: true, runValidators: true }
     );
@@ -99,7 +104,6 @@ export const updateCita = async (req, res, next) => {
     next(err);
   }
 };
-
 /** Eliminar Cita */
 export const deleteCita = async (req, res, next) => {
   try {
