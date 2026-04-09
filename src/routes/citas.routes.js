@@ -1,28 +1,41 @@
-// src/routes/cita.routes.js
-import { Router } from 'express';
-import { 
-    createCita,    // Antes tenías 'crearCita'
-    getCitas,      // Antes tenías 'obtenerCitas'
-    getCitaById,   // Antes tenías 'obtenerCitaPorId'
-    updateCita,    // Antes tenías 'actualizarCita'
-    deleteCita     // Antes tenías 'eliminarCita'
-} from '../controllers/cita.controller.js';
+import { Router } from "express";
+import {
+  createCita,
+  getCitas,
+  getCitaById,
+  deleteCita,
+  updateCita 
+} from "../controllers/cita.controller.js";
+
+// Importación de tus validadores específicos para citas
+import {
+  createCitaValidator,
+  idValidator
+} from "../validators/cita.validator.js";
+
+// Tu middleware de protección (asegúrate de que el archivo se llame así)
+import { protect } from "../middleware/auth.middleware.js";
 
 const router = Router();
 
-// Endpoint: /api/citas/register
-router.post('/register', createCita); 
+/** * RUTAS PARA /api/citas 
+ * Todas requieren estar logueado para gestionar la agenda médica
+ */
+router.use(protect);
 
-// Endpoint: /api/citas/all
-router.get('/all', getCitas); 
+// GET: Listar citas (con filtros y paginación)
+router.get("/", getCitas);
 
-// Endpoint: /api/citas/details/:id
-router.get('/details/:id', getCitaById);
+// POST: Crear una nueva cita con validación de datos
+router.post("/", createCitaValidator, createCita);
 
-// Endpoint: /api/citas/update/:id
-router.put('/update/:id', updateCita); 
+// GET: Ver detalle de una cita por ID
+router.get("/:id", idValidator, getCitaById);
 
-// Endpoint: /api/citas/delete/:id
-router.delete('/delete/:id', deleteCita); 
+// DELETE: Cancelar/Eliminar una cita
+router.delete("/:id", idValidator, deleteCita);
+
+// PUT: Actualizar datos de una cita existente
+router.put("/:id", idValidator, createCitaValidator, updateCita);
 
 export default router;
